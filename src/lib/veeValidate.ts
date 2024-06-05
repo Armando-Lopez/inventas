@@ -12,12 +12,6 @@ configure({
 });
 setLocale('es');
 
-const rules = {
-  required,
-  email,
-  confirmed
-}
-
-for (const key in rules) {
-  defineRule(key, rules[key]);
-}
+defineRule('required', required);
+defineRule('email', email);
+defineRule('confirmed', confirmed);
