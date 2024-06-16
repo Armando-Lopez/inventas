@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { TABLES, supabase } from '@/lib/supabase'
 import { defineStore } from 'pinia'
 import { onMounted, ref } from 'vue'
 import type { ProductModel } from './products'
@@ -7,15 +7,12 @@ import { EVENTS, useEventsStore } from './events'
 export const useStoresStore = defineStore('stores', () => {
   const $eventsStore = useEventsStore()
 
-  const TABLE = 'stores'
-  const STORE_PRODUCTS_TABLE = 'store_products'
-
   const stores = ref<StoreModel[]>([])
 
   onMounted(getProductsByStore)
 
   async function addStore(store: StoreToSave) {
-    const { data, error } = await supabase.from(TABLE).insert(store).select()
+    const { data, error } = await supabase.from(TABLES.STORES).insert(store).select()
 
     if (error) {
       return null
@@ -26,25 +23,25 @@ export const useStoresStore = defineStore('stores', () => {
 
   async function getProductsByStore() {
     stores.value = []
-    const { data, error } = await supabase.from(TABLE).select(
+    const { data, error } = await supabase.from(TABLES.STORES).select(
       `
           *,
-          store_products (
+          ${TABLES.STORE_PRODUCTS} (
             *,
-            products (*)
+            ${TABLES.PRODUCTS} (*)
           )
         `
     )
 
     if (!error) {
-      stores.value = data as StoreModel[]
+      stores.value = data as unknown as StoreModel[]
     }
   }
 
   async function saveProductsByStore(
     productsByStore: { store_id: number; product_id: number; quantity: number }[]
   ) {
-    const { error } = await supabase.from(STORE_PRODUCTS_TABLE).insert(productsByStore)
+    const { error } = await supabase.from(TABLES.STORE_PRODUCTS).insert(productsByStore)
 
     if (error) {
       console.error(error)
@@ -71,7 +68,7 @@ export const useStoresStore = defineStore('stores', () => {
       }
       if (item.quantity !== item.previousQuantity && item.quantity) {
         const { error } = await supabase
-          .from(STORE_PRODUCTS_TABLE)
+          .from(TABLES.STORE_PRODUCTS)
           .update({ quantity: item.quantity })
           .eq('id', item.id)
         if (error) {
@@ -79,7 +76,7 @@ export const useStoresStore = defineStore('stores', () => {
           return false
         }
       } else if (!item.quantity || item.quantity === 0) {
-        const { error } = await supabase.from(STORE_PRODUCTS_TABLE).delete().eq('id', item.id)
+        const { error } = await supabase.from(TABLES.STORE_PRODUCTS).delete().eq('id', item.id)
         if (error) {
           console.error(error)
           return false

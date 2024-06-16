@@ -1,6 +1,6 @@
 import { onMounted, ref } from 'vue'
 import { defineStore } from 'pinia'
-import { supabase } from '@/lib/supabase'
+import { TABLES, supabase } from '@/lib/supabase'
 
 export interface ProductToSave {
   code: string
@@ -14,13 +14,11 @@ export interface ProductModel extends ProductToSave {
 
 export const useProductsStore = defineStore('products', () => {
 
-  const TABLE = 'products'
-
   const products = ref<ProductModel[]>([])
 
   onMounted(async () => {
     const { data, error } = await supabase
-      .from(TABLE)
+      .from(TABLES.PRODUCTS)
       .select()
 
     if (!error) {
@@ -31,7 +29,7 @@ export const useProductsStore = defineStore('products', () => {
 
   async function addProduct(product: ProductToSave) {
     const { data, error } = await supabase
-      .from(TABLE)
+      .from(TABLES.PRODUCTS)
       .insert(product)
       .select()
 

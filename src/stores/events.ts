@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { TABLES, supabase } from '@/lib/supabase'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
@@ -9,7 +9,6 @@ export enum EVENTS {
 }
 
 export const useEventsStore = defineStore('events', () => {
-  const TABLE = 'events'
 
   const events = ref([])
 
@@ -21,7 +20,7 @@ export const useEventsStore = defineStore('events', () => {
   }
 
   async function updateProductsExistenceEvent(data: any) {
-    const { error } = await supabase.from(TABLE).insert({
+    const { error } = await supabase.from(TABLES.EVENTS).insert({
       type: EVENTS.UPDATE_PRODUCT_EXISTENCE,
       data: {
         product: data.productId,
