@@ -104,7 +104,7 @@ async function saveAddProducts() {
               class="input input-bordered input-sm w-32"
               min="0"
               :value="selectedProductsToAdd.find((p) => p.product.id === product.id)?.quantity"
-              @input="handleAddProduct(product, Number($event.target?.value || 0))"
+              @input="handleAddProduct(product, Number(($event.target as HTMLInputElement).value || 0))"
             />
           </div>
         </li>
