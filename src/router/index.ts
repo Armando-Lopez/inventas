@@ -10,7 +10,7 @@ const router = createRouter({
       path: '/',
       name: 'login',
       meta: {
-        layout: OnboardingLayout,
+        layout: OnboardingLayout
       },
       component: () => import('../views/LoginView.vue')
     },
@@ -18,7 +18,7 @@ const router = createRouter({
       path: '/productos',
       name: 'products',
       meta: {
-        layout: AuthLayout,
+        layout: AuthLayout
       },
       component: () => import('../views/ProductsView.vue')
     },
@@ -26,17 +26,19 @@ const router = createRouter({
       path: '/bodegas',
       name: 'stores',
       meta: {
-        layout: AuthLayout,
+        layout: AuthLayout
       },
       component: () => import('../views/StoresView.vue')
-    },
+    }
   ]
 })
 
 router.beforeEach(async (to, from, next) => {
   const { data } = await supabase.auth.getUser()
   if (!data.user?.id && to.name !== 'login') {
-    next({ name: 'login' })
+    return next({ name: 'login' })
+  } else if (to.name === 'login' && data.user?.id) {
+    return next({ name: 'products' })
   }
   next()
 })
