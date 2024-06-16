@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase } from '@/lib/supabase'
 
@@ -9,22 +9,21 @@ type LoginCred = {
 
 export const useUserStore = defineStore('user', () => {
 
-  const user = reactive<{ email?: string }>({
+  const user = reactive<{ email: string }>({
     email: ''
   })
 
   onMounted(async () => {
     const { data } = await supabase.auth.getUser()
-    user.email = data.user?.email
+    user.email = data.user?.email || ''
   })
 
   async function signUp(credentials: LoginCred) {
     const { data, error } = await supabase.auth.signUp(credentials)
     if (error) {
       console.error(error);
-      return
     }
-    return data
+    return { data, error }
   }
 
   async function signIn(credentials: LoginCred) {

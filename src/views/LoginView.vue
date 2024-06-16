@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AppTextField from '@/components/forms/AppTextField.vue'
-import AppForm from '@/components/forms/AppForm.vue'
+import AppTextField from '@/components/shared/forms/AppTextField.vue'
+import AppForm from '@/components/shared/forms/AppForm.vue'
 import { useUserStore } from '@/stores/user'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -10,11 +10,15 @@ const $user = useUserStore()
 
 const loginType = ref<'signIn' | 'signUp'>('signIn')
 
-async function createAccount(data: any) {
-  const success = await $user.signUp(data)
-  if (success) {
-    $router.push({ name: 'products' })
+async function signUp(data: any) {
+  const { error } = await $user.signUp(data)
+  if (error) {
+    if (error.name === 'AuthWeakPasswordError') {
+      alert('La contraseña debe tener al menos 6 carateres')
+    }
+    return
   }
+  loginType.value = 'signIn'
 }
 
 async function signIn(data: any) {
@@ -38,7 +42,7 @@ async function signIn(data: any) {
             <button
               role="tab"
               class="tab"
-              :class="{ 'tab-active': loginType === 'signIn' }"
+              :class="{ 'tab-active font-semibold': loginType === 'signIn' }"
               @click="loginType = 'signIn'"
             >
               Iniciar sesión
@@ -46,7 +50,7 @@ async function signIn(data: any) {
             <button
               role="tab"
               class="tab"
-              :class="{ 'tab-active': loginType === 'signUp' }"
+              :class="{ 'tab-active font-semibold': loginType === 'signUp' }"
               @click="loginType = 'signUp'"
             >
               Crear cuenta
@@ -71,7 +75,7 @@ async function signIn(data: any) {
             v-slot="{ isLoading }"
             class="grid gap-3 p-4 border-x border-b rounded-b-lg"
             autocomplete="off"
-            :to-submit="createAccount"
+            :to-submit="signUp"
           >
             <AppTextField name="email" label="Correo electronico" rules="required|email" />
             <AppTextField name="password" type="password" label="Contraseña" rules="required" />

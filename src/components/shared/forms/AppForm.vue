@@ -8,7 +8,11 @@ const props = defineProps({
 
 const emit = defineEmits(['submit', 'error'])
 
-const { handleSubmit, meta } = useForm()
+const { handleSubmit, meta, resetForm } = useForm()
+
+defineExpose({
+  resetForm
+})
 
 const isLoading = ref(false)
 

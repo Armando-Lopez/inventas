@@ -2,15 +2,14 @@ import { onMounted, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { supabase } from '@/lib/supabase'
 
-interface ProductModel extends ProductToSave {
-  id: number
-  created_at: string
-}
-
 export interface ProductToSave {
   code: string
   name: string
   description: string
+}
+export interface ProductModel extends ProductToSave {
+  id: number
+  created_at: string
 }
 
 export const useProductsStore = defineStore('products', () => {
@@ -24,7 +23,9 @@ export const useProductsStore = defineStore('products', () => {
       .from(TABLE)
       .select()
 
-    products.value = data as ProductModel[]
+    if (!error) {
+      products.value = data as ProductModel[]
+    }
 
   })
 
